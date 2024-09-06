@@ -8,15 +8,32 @@ function Resume() {
   const [resumeData, setResumeData] = useState(null);
   const { isOpen, onOpen, onClose } = useDisclosure();
   const resumeRef = useRef();
-  
+
+  // Updated generatePDF function with proper padding/margin handling
   const generatePDF = () => {
-    html2canvas(resumeRef.current).then(canvas => {
+    html2canvas(resumeRef.current, {
+      scale: 4, // Increase scale for better quality
+      useCORS: true, // Enable CORS for images
+      backgroundColor: '#ffffff' // Set background color to white
+    }).then(canvas => {
       const imgData = canvas.toDataURL("image/png");
       const doc = new jsPDF({
         format: 'a4',
-        unit: 'mm'
+        unit: 'mm',
       });
-      doc.addImage(imgData, 'PNG', 10, 10, 190, 0);
+
+      // Page dimensions and image sizing
+      const pageWidth = doc.internal.pageSize.getWidth();
+      const pageHeight = doc.internal.pageSize.getHeight();
+      
+      const imgWidth = 190; // Width with padding
+      const imgHeight = (canvas.height * imgWidth) / canvas.width;
+
+      // Center the image vertically if shorter than the page
+      const position = imgHeight < pageHeight ? (pageHeight - imgHeight) / 2 : 10;
+
+      // Add image with some padding
+      doc.addImage(imgData, 'PNG', 10, position, imgWidth, imgHeight);
       doc.save("resume.pdf");
     });
   };
@@ -57,28 +74,28 @@ function Resume() {
                       {resumeData.name}
                     </Heading>
                     <Text fontSize="m">{resumeData.jobTitle || 'Full Stack Web Developer'}</Text>
-                   
                   </Box>
                 </Flex>
               </Flex>
 
+              {/* Contact Section */}
+              <Box mb={4}>
+                <Heading as="h2" size="sm" mb={2}>Contact</Heading>
+                <Text mt={2}>Phone: {resumeData.phone}</Text>
+                <Text>Email: {resumeData.email}</Text>
+                <Link href={resumeData.linkedin} isExternal>
+                  <Text color="teal.600" mt={1}>LinkedIn</Text>
+                </Link>
+                <Link href={resumeData.github} isExternal>
+                  <Text color="teal.600" mt={1}>GitHub</Text>
+                </Link>
+                <Link href={resumeData.portfolio} isExternal>
+                  <Text color="teal.600" mt={1}>Portfolio</Text>
+                </Link>
+              </Box>
+
               {/* Experience Section */}
               <Box mb={4}>
-
-              <Heading as="h2" size="sm" mb={2}>Contact</Heading>
-
-              <Text mt={2}>Phone: {resumeData.phone}</Text>
-                    <Text>Email: {resumeData.email}</Text>
-                    <Link href={resumeData.linkedin} isExternal>
-                      <Text color="teal.600" mt={1}>LinkedIn</Text>
-                    </Link>
-                    <Link href={resumeData.github} isExternal>
-                      <Text color="teal.600" mt={1}>GitHub</Text>
-                    </Link>
-                    <Link href={resumeData.portfolio} isExternal>
-                      <Text color="teal.600" mt={1}>Portfolio</Text>
-                    </Link>
-              
                 <Heading as="h2" size="sm" mb={2}>Experience</Heading>
                 {resumeData.experiences.map((exp, index) => (
                   <Box key={index} mb={3}>
@@ -103,7 +120,6 @@ function Resume() {
 
               {/* Skills Section */}
               <Box mb={4}>
-                <Heading as="h2" size="sm" mb={2}>Skills</Heading>
                 <Box mb={2}>
                   <Heading as="h3" size="xs" mb={1}>Technical Skills</Heading>
                   <HStack spacing={2} wrap="wrap">
