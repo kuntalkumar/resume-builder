@@ -45,7 +45,7 @@ education: [
 ],
 technicalSkills: ["HTML","CSS","JavaScript", "React", "Node.js","Express", "MongoDB"],
 softSkills: ["Communication", "Teamwork", "Problem-Solving", "Adaptability"],
-hobbies: "Hiking, Reading, Traveling",
+hobbies: "Travelling, Reading Technical Blogs, Listening Music",
 references: "Available upon request"
 });
 
